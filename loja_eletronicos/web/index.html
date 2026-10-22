@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBERTECH // Hardware & E-commerce em C</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            50: '#f0fdfa',
+                            500: '#06b6d4',
+                            600: '#0891b2',
+                            accent: '#6366f1',
+                            neon: '#10b981',
+                            dark: '#0b0f19',
+                            card: '#111827',
+                            border: '#1f2937'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+        }
+        .glow-effect {
+            box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.35);
+        }
+        .glow-card:hover {
+            box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.4);
+            border-color: rgba(99, 102, 241, 0.6);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #374151;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#0b0f19] text-gray-100 selection:bg-cyan-500 selection:text-black">
+
+    <!-- Top Announcement Bar -->
+    <div class="bg-gradient-to-r from-cyan-900/60 via-indigo-900/60 to-purple-900/60 border-b border-cyan-500/20 px-4 py-1.5 text-xs text-center text-cyan-200 flex items-center justify-center gap-2">
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>⚡ <strong>BACKEND EM C NATIVO (WINSOCK2):</strong> Servindo requisições HTTP REST diretamente na memória! Use cupom <strong>TECH10</strong> para 10% OFF.</span>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-40 bg-[#0b0f19]/80 backdrop-blur-xl border-b border-gray-800/80 transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+            
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="filterCategory('Todos')">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+                    <i data-lucide="cpu" class="w-6 h-6 text-white"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-xl font-black tracking-tight text-white">CYBER<span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">STORE</span></span>
+                        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800">C v1.0</span>
+                    </div>
+                    <p class="text-[11px] text-gray-400 hidden sm:block">Hardware & Acessórios de Alta Performance</p>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="flex-1 max-w-lg mx-2 hidden md:block">
+                <div class="relative">
+                    <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="Buscar RTX 4080, Teclado Mecânico, Monitor OLED, SSD..." 
+                           class="w-full pl-11 pr-10 py-2.5 bg-gray-900/90 border border-gray-800 rounded-xl text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all text-gray-100 placeholder-gray-500 shadow-inner">
+                    <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="flex items-center gap-2.5 sm:gap-3">
+                <!-- Server Metrics / C Stats Button -->
+                <button onclick="openStatsModal()" class="px-3 py-2 rounded-xl bg-gray-900 border border-gray-800 hover:border-gray-700 text-gray-300 hover:text-white text-xs font-mono flex items-center gap-2 transition" title="Métricas do Servidor C">
+                    <i data-lucide="activity" class="w-4 h-4 text-emerald-400"></i>
+                    <span class="hidden sm:inline">Servidor C</span>
+                </button>
+
+                <!-- My Orders Button -->
+                <button onclick="openOrdersModal()" class="px-3 py-2 rounded-xl bg-gray-900 border border-gray-800 hover:border-gray-700 text-gray-300 hover:text-white text-xs font-medium flex items-center gap-2 transition">
+                    <i data-lucide="package" class="w-4 h-4 text-cyan-400"></i>
+                    <span class="hidden sm:inline">Meus Pedidos</span>
+                </button>
+
+                <!-- Cart Button -->
+                <button onclick="toggleCart()" class="relative px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white text-sm font-semibold flex items-center gap-2.5 shadow-lg shadow-cyan-600/30 transition-all transform active:scale-95">
+                    <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                    <span class="hidden sm:inline">Carrinho</span>
+                    <span id="cartCountBadge" class="bg-white text-cyan-900 text-xs font-bold rounded-full h-5 min-w-[20px] px-1.5 flex items-center justify-center">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Search Bar -->
+        <div class="px-4 pb-3 md:hidden">
+            <div class="relative">
+                <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input type="text" oninput="handleSearch(this.value)" placeholder="Buscar no catálogo..." 
+                       class="w-full pl-10 pr-4 py-2 bg-gray-900 border border-gray-800 rounded-xl text-sm focus:outline-none focus:border-cyan-500 text-gray-100">
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        
+        <!-- Hero Banner -->
+        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-gray-900 via-indigo-950/40 to-cyan-950/50 border border-gray-800 p-8 sm:p-12 shadow-2xl">
+            <div class="absolute -right-24 -top-24 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -left-24 -bottom-24 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="relative z-10 max-w-2xl space-y-4">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-medium">
+                    <i data-lucide="zap" class="w-3.5 h-3.5"></i> Nova Linha Gaming 2026 Disponível
+                </div>
+                <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+                    Equipamentos Pro para <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-indigo-400">Gamers & Criadores</span>.
+                </h1>
+                <p class="text-gray-300 text-sm sm:text-base leading-relaxed">
+                    Explore placas de vídeo de última geração, periféricos com resposta ultrarrápida e componentes para elevar seu setup ao nível máximo.
+                </p>
+                <div class="pt-2 flex flex-wrap gap-4">
+                    <button onclick="scrollToProducts()" class="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm flex items-center gap-2 shadow-lg shadow-cyan-500/30 transition transform hover:-translate-y-0.5">
+                        <i data-lucide="flame" class="w-4 h-4"></i> Ver Ofertas em Destaque
+                    </button>
+                    <button onclick="openStatsModal()" class="px-5 py-3 rounded-xl bg-gray-800/80 hover:bg-gray-700 border border-gray-700 text-gray-200 font-semibold text-sm flex items-center gap-2 transition">
+                        <i data-lucide="terminal" class="w-4 h-4 text-cyan-400"></i> Arquitetura em C
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Filter & Sort Bar -->
+        <section id="products-section" class="space-y-5">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-2 border-b border-gray-800/80">
+                
+                <!-- Category Tabs -->
+                <div class="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 scrollbar-none" id="categoryContainer">
+                    <!-- Populated dynamically via JS -->
+                </div>
+
+                <!-- Sorting and Counter -->
+                <div class="flex items-center justify-between sm:justify-end gap-3 shrink-0">
+                    <span id="productCounter" class="text-xs text-gray-400 font-mono">0 produtos encontrados</span>
+                    <div class="flex items-center gap-2 bg-gray-900 border border-gray-800 rounded-xl px-3 py-1.5 text-xs text-gray-300">
+                        <i data-lucide="arrow-down-up" class="w-3.5 h-3.5 text-gray-400"></i>
+                        <select id="sortSelect" onchange="handleSort(this.value)" class="bg-transparent text-gray-200 focus:outline-none cursor-pointer">
+                            <option value="default" class="bg-gray-900 text-white">Relevância</option>
+                            <option value="price-asc" class="bg-gray-900 text-white">Menor Preço</option>
+                            <option value="price-desc" class="bg-gray-900 text-white">Maior Preço</option>
+                            <option value="rating" class="bg-gray-900 text-white">Melhor Avaliação</option>
+                            <option value="name" class="bg-gray-900 text-white">Nome A-Z</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Dynamically rendered -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden text-center py-16 space-y-4">
+                <div class="w-16 h-16 rounded-full bg-gray-800/80 flex items-center justify-center mx-auto text-gray-500">
+                    <i data-lucide="search-x" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-200">Nenhum produto encontrado</h3>
+                <p class="text-sm text-gray-400 max-w-sm mx-auto">Tente buscar por outro termo ou selecione a categoria "Todos".</p>
+                <button onclick="clearSearch(); filterCategory('Todos')" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-semibold">
+                    Redefinir Filtros
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Slide-over Cart Drawer -->
+    <div id="cartDrawerBackdrop" onclick="toggleCart()" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 transition-opacity duration-300 opacity-0 pointer-events-none"></div>
+    <div id="cartDrawer" class="fixed right-0 top-0 bottom-0 w-full max-w-md bg-[#0f1422] border-l border-gray-800 z-50 flex flex-col transform translate-x-full transition-transform duration-300 shadow-2xl">
+        
+        <!-- Cart Header -->
+        <div class="p-6 border-b border-gray-800 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                    <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-white">Seu Carrinho</h3>
+                    <p id="cartItemsSubtitle" class="text-xs text-gray-400">0 itens adicionados</p>
+                </div>
+            </div>
+            <button onclick="toggleCart()" class="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <!-- Cart Items List -->
+        <div id="cartItemList" class="flex-1 overflow-y-auto p-6 space-y-4">
+            <!-- Dynamically injected -->
+        </div>
+
+        <!-- Cart Summary Footer -->
+        <div class="p-6 border-t border-gray-800 bg-[#0b0f19]/90 space-y-4">
+            
+            <!-- Coupon Input -->
+            <div class="flex gap-2">
+                <input type="text" id="couponInput" placeholder="Cupom de desconto (ex: TECH10)" 
+                       class="flex-1 px-3 py-2 bg-gray-900 border border-gray-800 rounded-xl text-xs uppercase font-mono tracking-wider focus:outline-none focus:border-cyan-500 text-white">
+                <button onclick="applyCoupon()" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-cyan-300 border border-gray-700 rounded-xl text-xs font-semibold transition">
+                    Aplicar
+                </button>
+            </div>
+            <div id="couponFeedback" class="text-[11px] hidden"></div>
+
+            <!-- Price Breakdown -->
+            <div class="space-y-1.5 text-xs text-gray-300">
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Subtotal:</span>
+                    <span id="cartSubtotal" class="font-mono text-gray-200">R$ 0,00</span>
+                </div>
+                <div class="flex justify-between" id="discountRow" style="display: none;">
+                    <span class="text-emerald-400">Desconto aplicado:</span>
+                    <span id="cartDiscount" class="font-mono text-emerald-400">- R$ 0,00</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Frete Nacional:</span>
+                    <span id="cartShipping" class="font-mono text-emerald-400">Grátis</span>
+                </div>
+                <div class="flex justify-between text-base font-bold text-white pt-2 border-t border-gray-800">
+                    <span>Total:</span>
+                    <span id="cartTotal" class="font-mono text-cyan-400">R$ 0,00</span>
+                </div>
+            </div>
+
+            <!-- Checkout Action Button -->
+            <button id="checkoutBtn" onclick="openCheckoutModal()" disabled class="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 transition-all">
+                <span>Finalizar Pedido</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Product Details Modal -->
+    <div id="productModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#111827] border border-gray-800 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative">
+            <button onclick="closeProductModal()" class="absolute right-4 top-4 p-2 rounded-xl bg-gray-900/80 hover:bg-gray-800 text-gray-400 hover:text-white transition z-10">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div id="modalProductContent" class="p-6 sm:p-8 space-y-6">
+                <!-- Dynamically injected -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#111827] border border-gray-800 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 sm:p-8 space-y-6 relative">
+            <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                        <i data-lucide="shield-check" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white">Finalização Segura</h3>
+                        <p class="text-xs text-gray-400">Processado via backend nativo em C</p>
+                    </div>
+                </div>
+                <button onclick="closeCheckoutModal()" class="p-2 rounded-xl hover:bg-gray-800 text-gray-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Form Body -->
+            <form id="checkoutForm" onsubmit="handleFormSubmit(event)" class="space-y-6">
+                
+                <!-- Dados do Comprador -->
+                <div class="space-y-3">
+                    <h4 class="text-sm font-semibold text-cyan-400 uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="user" class="w-4 h-4"></i> Dados do Cliente
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-xs text-gray-400 block mb-1">Nome Completo *</label>
+                            <input type="text" id="custName" required placeholder="Ex: Carlos Silva" 
+                                   class="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-400 block mb-1">E-mail *</label>
+                            <input type="email" id="custEmail" required placeholder="carlos@exemplo.com" 
+                                   class="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-400 block mb-1">CPF *</label>
+                            <input type="text" id="custCpf" required placeholder="000.000.000-00" 
+                                   class="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-400 block mb-1">CEP e Endereço *</label>
+                            <input type="text" id="custAddress" required placeholder="Rua, Número, Bairro, Cidade" 
+                                   class="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Método de Pagamento -->
+                <div class="space-y-3">
+                    <h4 class="text-sm font-semibold text-cyan-400 uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="credit-card" class="w-4 h-4"></i> Forma de Pagamento
+                    </h4>
+                    
+                    <div class="grid grid-cols-3 gap-3">
+                        <label class="relative flex flex-col items-center justify-center p-3 rounded-xl border border-gray-800 bg-gray-900/60 hover:bg-gray-800/80 cursor-pointer transition has-[:checked]:border-cyan-500 has-[:checked]:bg-cyan-500/10">
+                            <input type="radio" name="paymentMethod" value="PIX" checked onchange="togglePaymentTabs('PIX')" class="hidden">
+                            <i data-lucide="qr-code" class="w-6 h-6 text-emerald-400 mb-1"></i>
+                            <span class="text-xs font-bold text-white">PIX</span>
+                            <span class="text-[10px] text-emerald-400 font-semibold mt-0.5">5% OFF</span>
+                        </label>
+
+                        <label class="relative flex flex-col items-center justify-center p-3 rounded-xl border border-gray-800 bg-gray-900/60 hover:bg-gray-800/80 cursor-pointer transition has-[:checked]:border-cyan-500 has-[:checked]:bg-cyan-500/10">
+                            <input type="radio" name="paymentMethod" value="Cartão" onchange="togglePaymentTabs('Cartão')" class="hidden">
+                            <i data-lucide="credit-card" class="w-6 h-6 text-indigo-400 mb-1"></i>
+                            <span class="text-xs font-bold text-white">Cartão</span>
+                            <span class="text-[10px] text-gray-400 mt-0.5">Até 12x</span>
+                        </label>
+
+                        <label class="relative flex flex-col items-center justify-center p-3 rounded-xl border border-gray-800 bg-gray-900/60 hover:bg-gray-800/80 cursor-pointer transition has-[:checked]:border-cyan-500 has-[:checked]:bg-cyan-500/10">
+                            <input type="radio" name="paymentMethod" value="Boleto" onchange="togglePaymentTabs('Boleto')" class="hidden">
+                            <i data-lucide="barcode" class="w-6 h-6 text-amber-400 mb-1"></i>
+                            <span class="text-xs font-bold text-white">Boleto</span>
+                            <span class="text-[10px] text-gray-400 mt-0.5">À vista</span>
+                        </label>
+                    </div>
+
+                    <!-- Payment Subviews -->
+                    <div id="pixPaymentView" class="p-4 rounded-xl bg-gray-900/90 border border-gray-800 space-y-3 text-center">
+                        <div class="inline-block p-3 bg-white rounded-xl shadow-lg">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=00020126580014BR.GOV.BCB.PIX0136e0477bf9-c-store-winsock-payment5204000053039865802BR" alt="PIX QR Code" class="w-32 h-32 mx-auto">
+                        </div>
+                        <p class="text-xs text-gray-300">Escaneie o código acima ou utilize o código Copia e Cola:</p>
+                        <div class="flex items-center gap-2 max-w-sm mx-auto">
+                            <input type="text" readonly value="00020126580014BR.GOV.BCB.PIX0136e0477bf9-c-store-winsock-payment" class="bg-black/50 border border-gray-700 text-[11px] font-mono px-3 py-1.5 rounded-lg text-gray-300 flex-1 truncate">
+                            <button type="button" onclick="copyPixCode()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition">Copiar</button>
+                        </div>
+                    </div>
+
+                    <div id="cardPaymentView" class="hidden p-4 rounded-xl bg-gray-900/90 border border-gray-800 space-y-3">
+                        <div>
+                            <label class="text-xs text-gray-400 block mb-1">Número do Cartão</label>
+                            <input type="text" placeholder="4000 1234 5678 9010" class="w-full px-3 py-2 bg-black/40 border border-gray-800 rounded-xl text-sm text-white font-mono">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs text-gray-400 block mb-1">Validade (MM/AA)</label>
+                                <input type="text" placeholder="12/28" class="w-full px-3 py-2 bg-black/40 border border-gray-800 rounded-xl text-sm text-white font-mono">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-400 block mb-1">CVV</label>
+                                <input type="password" placeholder="123" maxlength="4" class="w-full px-3 py-2 bg-black/40 border border-gray-800 rounded-xl text-sm text-white font-mono">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="boletoPaymentView" class="hidden p-4 rounded-xl bg-gray-900/90 border border-gray-800 text-center space-y-2">
+                        <i data-lucide="receipt" class="w-10 h-10 text-amber-400 mx-auto"></i>
+                        <p class="text-xs text-gray-300">O boleto bancário será gerado com vencimento para 3 dias úteis após a confirmação do pedido.</p>
+                    </div>
+
+                </div>
+
+                <!-- Order Final Total -->
+                <div class="p-4 rounded-xl bg-cyan-950/30 border border-cyan-800/40 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-gray-400 block">Total a pagar:</span>
+                        <span id="checkoutTotalValue" class="text-xl font-bold font-mono text-cyan-300">R$ 0,00</span>
+                    </div>
+                    <button type="submit" id="submitOrderBtn" class="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-sm flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition transform active:scale-95">
+                        <i data-lucide="check-circle" class="w-4 h-4"></i>
+                        <span>Confirmar e Pagar</span>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#111827] border border-emerald-500/40 rounded-2xl max-w-lg w-full p-8 text-center space-y-6 shadow-2xl relative">
+            <div class="w-20 h-20 rounded-full bg-emerald-500/20 border-2 border-emerald-500 flex items-center justify-center mx-auto text-emerald-400 animate-bounce">
+                <i data-lucide="check" class="w-10 h-10"></i>
+            </div>
+            <div class="space-y-2">
+                <h3 class="text-2xl font-black text-white">Pedido Realizado com Sucesso!</h3>
+                <p class="text-sm text-gray-300">Sua ordem foi processada e gravada no servidor C nativo.</p>
+            </div>
+
+            <div class="p-4 bg-gray-900/90 rounded-xl border border-gray-800 text-left text-xs font-mono space-y-2 text-gray-300">
+                <div class="flex justify-between pb-1 border-b border-gray-800">
+                    <span class="text-gray-500">ID do Pedido:</span>
+                    <span id="successOrderId" class="text-cyan-400 font-bold">#ORD-0000</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Cliente:</span>
+                    <span id="successCustomer" class="text-white"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Pagamento:</span>
+                    <span id="successPayment" class="text-emerald-400"></span>
+                </div>
+                <div class="flex justify-between pt-1 border-t border-gray-800 font-bold text-white">
+                    <span>Total Pago:</span>
+                    <span id="successTotal" class="text-cyan-300"></span>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeSuccessModal()" class="flex-1 py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-sm font-bold transition">
+                    Continuar Comprando
+                </button>
+                <button onclick="closeSuccessModal(); openOrdersModal()" class="px-5 py-3 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-200 rounded-xl text-sm font-semibold transition">
+                    Ver Pedidos
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Modal -->
+    <div id="ordersModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#111827] border border-gray-800 rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl">
+            <div class="p-6 border-b border-gray-800 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                        <i data-lucide="package-check" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white">Histórico de Pedidos</h3>
+                        <p class="text-xs text-gray-400">Pedidos registrados nesta sessão pelo backend em C</p>
+                    </div>
+                </div>
+                <button onclick="closeOrdersModal()" class="p-2 rounded-xl hover:bg-gray-800 text-gray-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div id="ordersListContent" class="flex-1 overflow-y-auto p-6 space-y-4">
+                <!-- Dynamically injected -->
+            </div>
+        </div>
+    </div>
+
+    <!-- C Server Stats Modal -->
+    <div id="statsModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#111827] border border-cyan-500/40 rounded-2xl max-w-xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative">
+            <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                        <i data-lucide="cpu" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white">Status do Servidor C</h3>
+                        <p class="text-xs font-mono text-cyan-400">Winsock2 HTTP Engine</p>
+                    </div>
+                </div>
+                <button onclick="closeStatsModal()" class="p-2 rounded-xl hover:bg-gray-800 text-gray-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 rounded-xl bg-gray-900 border border-gray-800">
+                    <div class="text-gray-400 text-xs mb-1">Status do Socket:</div>
+                    <div class="text-emerald-400 font-bold flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                        ONLINE (Port 8080)
+                    </div>
+                </div>
+                <div class="p-4 rounded-xl bg-gray-900 border border-gray-800">
+                    <div class="text-gray-400 text-xs mb-1">Requisições HTTP:</div>
+                    <div id="statReqs" class="text-white font-mono font-bold text-lg">0</div>
+                </div>
+                <div class="p-4 rounded-xl bg-gray-900 border border-gray-800">
+                    <div class="text-gray-400 text-xs mb-1">Itens em Catálogo:</div>
+                    <div id="statProducts" class="text-cyan-400 font-mono font-bold text-lg">0</div>
+                </div>
+                <div class="p-4 rounded-xl bg-gray-900 border border-gray-800">
+                    <div class="text-gray-400 text-xs mb-1">Vendas Concluídas:</div>
+                    <div id="statOrders" class="text-indigo-400 font-mono font-bold text-lg">0</div>
+                </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-black/50 border border-gray-800 text-xs font-mono text-gray-400 space-y-1">
+                <div class="text-cyan-300 font-semibold mb-1">// Endpoints REST Disponíveis:</div>
+                <div>GET  /api/products   - Catálogo com estoque em C</div>
+                <div>GET  /api/cart       - Itens no carrinho</div>
+                <div>POST /api/cart/add   - Adicionar produto</div>
+                <div>POST /api/checkout   - Processar e gravar pedido</div>
+                <div>GET  /api/stats      - Telemetria do servidor</div>
+            </div>
+
+            <button onclick="closeStatsModal()" class="w-full py-2.5 bg-gray-800 hover:bg-gray-700 text-white rounded-xl text-sm font-semibold transition">
+                Fechar Monitor
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Frontend Core Application Script -->
+    <script>
+        // Global State
+        let allProducts = [];
+        let filteredProducts = [];
+        let activeCategory = 'Todos';
+        let searchQuery = '';
+        let currentSort = 'default';
+        let cartState = { items: [], subtotal: 0, discount: 0, shipping: 0, total: 0, count: 0 };
+        let activeDiscountPercent = 0;
+
+        const categories = [
+            'Todos',
+            'Placas de Vídeo',
+            'Processadores',
+            'Periféricos',
+            'Monitores',
+            'Memórias & SSD',
+            'Acessórios'
+        ];
+
+        // Format Currency Helper
+        function formatMoney(amount) {
+            return Number(amount).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        // Show Toast Helper
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `px-4 py-3 rounded-xl border text-sm font-medium shadow-2xl flex items-center gap-2 transform transition-all duration-300 translate-y-4 opacity-0 pointer-events-auto ${
+                type === 'success' ? 'bg-emerald-950/90 border-emerald-500/50 text-emerald-200' :
+                type === 'warning' ? 'bg-amber-950/90 border-amber-500/50 text-amber-200' :
+                'bg-gray-900/90 border-cyan-500/50 text-cyan-200'
+            }`;
+            
+            const icon = type === 'success' ? 'check-circle' : type === 'warning' ? 'alert-triangle' : 'info';
+            toast.innerHTML = `<i data-lucide="${icon}" class="w-4 h-4 shrink-0"></i><span>${message}</span>`;
+            
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-4', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Initialize UI
+        async function init() {
+            renderCategories();
+            await fetchProducts();
+            await fetchCart();
+            lucide.createIcons();
+        }
+
+        // Render Category Tabs
+        function renderCategories() {
+            const container = document.getElementById('categoryContainer');
+            container.innerHTML = categories.map(cat => `
+                <button onclick="filterCategory('${cat}')" 
+                        class="category-btn px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 border ${
+                            activeCategory === cat 
+                            ? 'bg-cyan-500 text-black border-cyan-400 shadow-md shadow-cyan-500/20' 
+                            : 'bg-gray-900/80 hover:bg-gray-800 text-gray-300 border-gray-800'
+                        }">
+                    ${cat}
+                </button>
+            `).join('');
+        }
+
+        function filterCategory(category) {
+            activeCategory = category;
+            renderCategories();
+            applyFilters();
+        }
+
+        function handleSearch(val) {
+            searchQuery = val.trim().toLowerCase();
+            document.getElementById('clearSearchBtn').classList.toggle('hidden', searchQuery.length === 0);
+            applyFilters();
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('searchInput');
+            if (input) input.value = '';
+            searchQuery = '';
+            document.getElementById('clearSearchBtn').classList.add('hidden');
+            applyFilters();
+        }
+
+        function handleSort(sortType) {
+            currentSort = sortType;
+            applyFilters();
+        }
+
+        function applyFilters() {
+            filteredProducts = allProducts.filter(p => {
+                const matchesCat = (activeCategory === 'Todos') || (p.category === activeCategory);
+                const matchesSearch = !searchQuery || 
+                                      p.name.toLowerCase().includes(searchQuery) || 
+                                      p.description.toLowerCase().includes(searchQuery) ||
+                                      p.category.toLowerCase().includes(searchQuery);
+                return matchesCat && matchesSearch;
+            });
+
+            // Sorting
+            if (currentSort === 'price-asc') {
+                filteredProducts.sort((a, b) => a.price - b.price);
+            } else if (currentSort === 'price-desc') {
+                filteredProducts.sort((a, b) => b.price - a.price);
+            } else if (currentSort === 'rating') {
+                filteredProducts.sort((a, b) => b.rating - a.rating);
+            } else if (currentSort === 'name') {
+                filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+            }
+
+            renderProducts();
+        }
+
+        // Fetch Products from C Backend
+        async function fetchProducts() {
+            try {
+                const res = await fetch('/api/products');
+                if (!res.ok) throw new Error('Falha ao comunicar com o servidor em C');
+                allProducts = await res.json();
+                applyFilters();
+            } catch (err) {
+                console.error(err);
+                showToast('Erro ao carregar produtos do servidor C', 'warning');
+            }
+        }
+
+        // Render Products Grid
+        function renderProducts() {
+            const grid = document.getElementById('productGrid');
+            const empty = document.getElementById('emptyState');
+            const counter = document.getElementById('productCounter');
+
+            counter.innerText = `${filteredProducts.length} ${filteredProducts.length === 1 ? 'produto encontrado' : 'produtos encontrados'}`;
+
+            if (filteredProducts.length === 0) {
+                grid.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            empty.classList.add('hidden');
+            grid.innerHTML = filteredProducts.map(p => {
+                const isOutOfStock = p.stock <= 0;
+                return `
+                <div class="group glow-card bg-[#111827] rounded-2xl border border-gray-800/90 overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1">
+                    
+                    <!-- Thumbnail with Badge -->
+                    <div class="relative h-48 overflow-hidden bg-gray-900 cursor-pointer" onclick="openProductModal(${p.id})">
+                        <img src="${p.imageUrl}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <span class="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-black/60 backdrop-blur-md text-cyan-300 border border-cyan-500/30">
+                            ${p.category}
+                        </span>
+                        ${p.badge ? `
+                            <span class="absolute top-3 right-3 text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-indigo-600 text-white shadow-lg">
+                                ${p.badge}
+                            </span>
+                        ` : ''}
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div class="space-y-2 cursor-pointer" onclick="openProductModal(${p.id})">
+                            <div class="flex items-center gap-1.5 text-xs text-amber-400">
+                                <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400 text-amber-400"></i>
+                                <span class="font-bold">${p.rating.toFixed(1)}</span>
+                                <span class="text-gray-500">(${p.reviews} avaliações)</span>
+                            </div>
+                            <h3 class="font-bold text-white text-base group-hover:text-cyan-400 transition-colors line-clamp-2 leading-snug">
+                                ${p.name}
+                            </h3>
+                            <p class="text-xs text-gray-400 line-clamp-2 leading-relaxed">
+                                ${p.description}
+                            </p>
+                        </div>
+
+                        <!-- Price & Action -->
+                        <div class="pt-3 border-t border-gray-800/80 space-y-3">
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-xl font-extrabold font-mono text-cyan-400">
+                                    ${formatMoney(p.price)}
+                                </span>
+                                ${p.oldPrice ? `
+                                    <span class="text-xs text-gray-500 line-through font-mono">
+                                        ${formatMoney(p.oldPrice)}
+                                    </span>
+                                ` : ''}
+                            </div>
+                            
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-[11px] ${isOutOfStock ? 'text-red-400' : 'text-emerald-400 font-medium'} flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full ${isOutOfStock ? 'bg-red-400' : 'bg-emerald-400'}"></span>
+                                    ${isOutOfStock ? 'Esgotado' : `${p.stock} em estoque`}
+                                </span>
+
+                                <button onclick="addToCart(${p.id})" ${isOutOfStock ? 'disabled' : ''} 
+                                        class="px-3.5 py-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500 text-cyan-400 hover:text-black border border-cyan-500/40 text-xs font-bold flex items-center gap-1.5 transition duration-200 disabled:opacity-40 disabled:cursor-not-allowed">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
+                                    <span>Adicionar</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        // Cart Backend Fetching
+        async function fetchCart() {
+            try {
+                const res = await fetch('/api/cart');
+                if (!res.ok) throw new Error('Erro ao obter carrinho');
+                cartState = await res.json();
+                renderCartUI();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function addToCart(productId) {
+            try {
+                const res = await fetch('/api/cart/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId: productId, quantity: 1 })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    await fetchCart();
+                    await fetchProducts(); // Refresh stock in real time
+                    showToast('Produto adicionado ao carrinho!', 'success');
+                } else {
+                    showToast(data.message || 'Estoque indisponível', 'warning');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Erro ao contatar servidor C', 'warning');
+            }
+        }
+
+        async function updateCartQuantity(productId, delta) {
+            try {
+                const res = await fetch('/api/cart/update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId: productId, delta: delta })
+                });
+                await fetchCart();
+                await fetchProducts();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function removeCartItem(productId) {
+            try {
+                await fetch('/api/cart/remove', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId: productId })
+                });
+                await fetchCart();
+                await fetchProducts();
+                showToast('Item removido do carrinho');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function renderCartUI() {
+            const badge = document.getElementById('cartCountBadge');
+            const list = document.getElementById('cartItemList');
+            const subtotalEl = document.getElementById('cartSubtotal');
+            const totalEl = document.getElementById('cartTotal');
+            const discountRow = document.getElementById('discountRow');
+            const discountEl = document.getElementById('cartDiscount');
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            const subtitle = document.getElementById('cartItemsSubtitle');
+
+            badge.innerText = cartState.count || 0;
+            subtitle.innerText = `${cartState.count || 0} ${cartState.count === 1 ? 'item adicionado' : 'itens adicionados'}`;
+
+            if (!cartState.items || cartState.items.length === 0) {
+                list.innerHTML = `
+                    <div class="text-center py-12 space-y-3">
+                        <i data-lucide="shopping-cart" class="w-12 h-12 text-gray-600 mx-auto"></i>
+                        <p class="text-sm text-gray-400">Seu carrinho está vazio.</p>
+                        <button onclick="toggleCart()" class="text-xs text-cyan-400 hover:underline">Explorar produtos</button>
+                    </div>
+                `;
+                subtotalEl.innerText = formatMoney(0);
+                totalEl.innerText = formatMoney(0);
+                discountRow.style.display = 'none';
+                checkoutBtn.disabled = true;
+                lucide.createIcons();
+                return;
+            }
+
+            checkoutBtn.disabled = false;
+
+            list.innerHTML = cartState.items.map(item => `
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-gray-900 border border-gray-800/80">
+                    <img src="${item.imageUrl}" alt="${item.name}" class="w-16 h-16 rounded-lg object-cover shrink-0 bg-gray-800">
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-xs font-semibold text-white truncate">${item.name}</h4>
+                        <div class="text-xs font-mono text-cyan-400 font-bold mt-0.5">${formatMoney(item.price)}</div>
+                        
+                        <div class="flex items-center gap-2 mt-2">
+                            <div class="flex items-center border border-gray-700 rounded-lg bg-black/40">
+                                <button onclick="updateCartQuantity(${item.productId}, -1)" class="px-2 py-0.5 text-gray-400 hover:text-white text-xs">-</button>
+                                <span class="px-2 text-xs font-mono text-white">${item.quantity}</span>
+                                <button onclick="updateCartQuantity(${item.productId}, 1)" class="px-2 py-0.5 text-gray-400 hover:text-white text-xs">+</button>
+                            </div>
+                            <button onclick="removeCartItem(${item.productId})" class="text-gray-500 hover:text-red-400 p-1 transition" title="Remover item">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Calculate active discounts
+            let discountAmount = 0;
+            if (activeDiscountPercent > 0) {
+                discountAmount = (cartState.subtotal * activeDiscountPercent) / 100;
+                discountRow.style.display = 'flex';
+                discountEl.innerText = `- ${formatMoney(discountAmount)}`;
+            } else {
+                discountRow.style.display = 'none';
+            }
+
+            const finalTotal = Math.max(0, cartState.subtotal - discountAmount);
+
+            subtotalEl.innerText = formatMoney(cartState.subtotal);
+            totalEl.innerText = formatMoney(finalTotal);
+            document.getElementById('checkoutTotalValue').innerText = formatMoney(finalTotal);
+
+            lucide.createIcons();
+        }
+
+        function toggleCart() {
+            const drawer = document.getElementById('cartDrawer');
+            const backdrop = document.getElementById('cartDrawerBackdrop');
+            const isOpen = !drawer.classList.contains('translate-x-full');
+
+            if (isOpen) {
+                drawer.classList.add('translate-x-full');
+                backdrop.classList.add('opacity-0', 'pointer-events-none');
+                backdrop.classList.remove('opacity-100');
+            } else {
+                drawer.classList.remove('translate-x-full');
+                backdrop.classList.remove('opacity-0', 'pointer-events-none');
+                backdrop.classList.add('opacity-100');
+            }
+        }
+
+        function applyCoupon() {
+            const input = document.getElementById('couponInput');
+            const feedback = document.getElementById('couponFeedback');
+            const code = input.value.trim().toUpperCase();
+
+            feedback.classList.remove('hidden');
+
+            if (code === 'TECH10') {
+                activeDiscountPercent = 10;
+                feedback.className = 'text-[11px] text-emerald-400 font-semibold';
+                feedback.innerText = '✓ Cupom TECH10 aplicado: 10% de desconto!';
+                showToast('Cupom de 10% aplicado!', 'success');
+                renderCartUI();
+            } else if (code === 'CYBER20') {
+                activeDiscountPercent = 20;
+                feedback.className = 'text-[11px] text-emerald-400 font-semibold';
+                feedback.innerText = '✓ Cupom VIP CYBER20 aplicado: 20% de desconto!';
+                showToast('Cupom VIP de 20% aplicado!', 'success');
+                renderCartUI();
+            } else {
+                feedback.className = 'text-[11px] text-red-400';
+                feedback.innerText = '✕ Cupom inválido ou expirado.';
+            }
+        }
+
+        // Product Modal Details
+        function openProductModal(productId) {
+            const p = allProducts.find(x => x.id === productId);
+            if (!p) return;
+
+            const modal = document.getElementById('productModal');
+            const content = document.getElementById('modalProductContent');
+
+            content.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    <div class="rounded-xl overflow-hidden bg-gray-900 border border-gray-800 h-64 sm:h-80">
+                        <img src="${p.imageUrl}" alt="${p.name}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="space-y-4">
+                        <span class="text-xs font-mono font-bold text-cyan-400 uppercase tracking-widest px-2.5 py-1 bg-cyan-950 rounded-md border border-cyan-800">
+                            ${p.category}
+                        </span>
+                        <h2 class="text-xl sm:text-2xl font-bold text-white">${p.name}</h2>
+                        <div class="flex items-center gap-2 text-sm text-amber-400">
+                            <i data-lucide="star" class="w-4 h-4 fill-amber-400 text-amber-400"></i>
+                            <span class="font-bold">${p.rating.toFixed(1)}</span>
+                            <span class="text-gray-400">(${p.reviews} avaliações de compradores verificados)</span>
+                        </div>
+                        <p class="text-sm text-gray-300 leading-relaxed">${p.description}</p>
+                        
+                        <div class="p-3 bg-gray-900 rounded-xl border border-gray-800 text-xs text-gray-300 space-y-1 font-mono">
+                            <div class="text-cyan-400 font-bold mb-1">// Especificações Técnicas:</div>
+                            ${p.specs ? p.specs.split('|').map(s => `<div>• ${s.trim()}</div>`).join('') : '<div>• Padrão industrial topo de linha</div>'}
+                        </div>
+
+                        <div class="pt-2">
+                            <div class="text-2xl font-extrabold font-mono text-cyan-400 mb-3">${formatMoney(p.price)}</div>
+                            <button onclick="addToCart(${p.id}); closeProductModal()" 
+                                    class="w-full py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold text-sm rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 transition">
+                                <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+                                <span>Adicionar ao Carrinho</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').classList.add('hidden');
+        }
+
+        // Checkout Modal & Tabs
+        function openCheckoutModal() {
+            toggleCart();
+            document.getElementById('checkoutModal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkoutModal').classList.add('hidden');
+        }
+
+        function togglePaymentTabs(method) {
+            document.getElementById('pixPaymentView').classList.toggle('hidden', method !== 'PIX');
+            document.getElementById('cardPaymentView').classList.toggle('hidden', method !== 'Cartão');
+            document.getElementById('boletoPaymentView').classList.toggle('hidden', method !== 'Boleto');
+        }
+
+        function copyPixCode() {
+            navigator.clipboard.writeText('00020126580014BR.GOV.BCB.PIX0136e0477bf9-c-store-winsock-payment');
+            showToast('Código PIX copiado com sucesso!', 'success');
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitOrderBtn');
+            btn.disabled = true;
+            btn.innerHTML = `<span class="animate-spin inline-block mr-2">⌛</span> Processando em C...`;
+
+            const name = document.getElementById('custName').value;
+            const email = document.getElementById('custEmail').value;
+            const cpf = document.getElementById('custCpf').value;
+            const address = document.getElementById('custAddress').value;
+            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+            try {
+                const res = await fetch('/api/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        customerName: name,
+                        customerEmail: email,
+                        customerCpf: cpf,
+                        customerAddress: address,
+                        paymentMethod: paymentMethod,
+                        discountPercent: activeDiscountPercent
+                    })
+                });
+
+                const orderResult = await res.json();
+
+                if (orderResult.success) {
+                    closeCheckoutModal();
+                    // Open Success Modal
+                    document.getElementById('successOrderId').innerText = orderResult.orderCode;
+                    document.getElementById('successCustomer').innerText = name;
+                    document.getElementById('successPayment').innerText = paymentMethod;
+                    document.getElementById('successTotal').innerText = formatMoney(orderResult.total);
+                    document.getElementById('successModal').classList.remove('hidden');
+                    
+                    // Reset cart
+                    activeDiscountPercent = 0;
+                    await fetchCart();
+                    await fetchProducts();
+                } else {
+                    showToast(orderResult.message || 'Erro ao processar checkout', 'warning');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Erro de comunicação com o servidor C', 'warning');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4"></i><span>Confirmar e Pagar</span>`;
+                lucide.createIcons();
+            }
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.add('hidden');
+        }
+
+        // Orders List Modal
+        async function openOrdersModal() {
+            try {
+                const res = await fetch('/api/orders');
+                const orders = await res.json();
+                const container = document.getElementById('ordersListContent');
+
+                if (!orders || orders.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-12 space-y-3">
+                            <i data-lucide="package-open" class="w-12 h-12 text-gray-600 mx-auto"></i>
+                            <p class="text-sm text-gray-400">Nenhum pedido realizado ainda.</p>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = orders.map(ord => `
+                        <div class="p-4 rounded-xl bg-gray-900 border border-gray-800 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-mono text-xs font-bold text-cyan-400">${ord.orderCode}</span>
+                                <span class="text-[11px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-semibold">
+                                    Aprovado
+                                </span>
+                            </div>
+                            <div class="text-sm font-semibold text-white">${ord.customerName}</div>
+                            <div class="text-xs text-gray-400 flex items-center justify-between">
+                                <span>${ord.itemsCount} ${ord.itemsCount === 1 ? 'item' : 'itens'} • Pagamento via ${ord.paymentMethod}</span>
+                                <span class="font-mono text-cyan-300 font-bold">${formatMoney(ord.totalAmount)}</span>
+                            </div>
+                            <div class="text-[10px] text-gray-500 font-mono">Registrado às: ${ord.timestamp}</div>
+                        </div>
+                    `).join('');
+                }
+
+                document.getElementById('ordersModal').classList.remove('hidden');
+                lucide.createIcons();
+            } catch (err) {
+                console.error(err);
+                showToast('Erro ao carregar histórico de pedidos', 'warning');
+            }
+        }
+
+        function closeOrdersModal() {
+            document.getElementById('ordersModal').classList.add('hidden');
+        }
+
+        // Server Stats Modal
+        async function openStatsModal() {
+            try {
+                const res = await fetch('/api/stats');
+                const stats = await res.json();
+                document.getElementById('statReqs').innerText = stats.requestsCount;
+                document.getElementById('statProducts').innerText = stats.productsCount;
+                document.getElementById('statOrders').innerText = stats.ordersCount;
+                document.getElementById('statsModal').classList.remove('hidden');
+                lucide.createIcons();
+            } catch (err) {
+                console.error(err);
+                showToast('Erro ao obter telemetria do servidor', 'warning');
+            }
+        }
+
+        function closeStatsModal() {
+            document.getElementById('statsModal').classList.add('hidden');
+        }
+
+        function scrollToProducts() {
+            document.getElementById('products-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Close modal on Escape
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeProductModal();
+                closeCheckoutModal();
+                closeSuccessModal();
+                closeOrdersModal();
+                closeStatsModal();
+            }
+        });
+
+        // Bootstrap
+        init();
+    </script>
+</body>
+</html>

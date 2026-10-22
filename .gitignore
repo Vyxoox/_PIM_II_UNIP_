@@ -1,0 +1,12 @@
+# Build temporaries
+*.obj
+*.ilk
+*.pdb
+*.tmp
+
+# Visual Studio / Editor caches
+.vs/
+.vscode/
+
+# Local memory dumps
+memoria_antigravity_brain/
