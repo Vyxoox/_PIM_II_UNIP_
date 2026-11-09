@@ -1,0 +1,7 @@
+# ID;NOME;CATEGORIA;PRECO;ESTOQUE;ESTOQUE_MINIMO
+1;Placa de Video RTX 4080 Super 16GB;Placas de Video;7299,90;4;2
+2;Processador AMD Ryzen 7 7800X3D;Processadores;2899,00;8;3
+3;Teclado Mecanico RGB Switch Red;Perifericos;349,90;15;5
+4;Mouse Gamer Sem Fio 26000 DPI;Perifericos;299,90;12;4
+5;Monitor Gamer 27" IPS 165Hz 1ms;Monitores;1499,00;6;2
+6;SSD NVMe M.2 2TB Gen4 7000MB/s;Armazenamento;899,90;10;3
