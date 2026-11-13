@@ -1,7 +1,7 @@
-# ID;NOME;CATEGORIA;PRECO;ESTOQUE;ESTOQUE_MINIMO
-1;Placa de Video RTX 4080 Super 16GB;Placas de Video;7299,90;4;2
-2;Processador AMD Ryzen 7 7800X3D;Processadores;2899,00;8;3
-3;Teclado Mecanico RGB Switch Red;Perifericos;349,90;15;5
-4;Mouse Gamer Sem Fio 26000 DPI;Perifericos;299,90;12;4
-5;Monitor Gamer 27" IPS 165Hz 1ms;Monitores;1499,00;6;2
-6;SSD NVMe M.2 2TB Gen4 7000MB/s;Armazenamento;899,90;10;3
+# ID;NOME;CATEGORIA;PRECO;PRECO_ANTIGO;ESTOQUE;ESTOQUE_MINIMO;ATIVO;BADGE;FOTO;SPECS
+1;Placa de Video RTX 4080 Super 16GB GDDR6X;Placas de Video;7299.90;8199.90;4;2;1;Destaque;/img/gpu.svg;16GB GDDR6X, 256-bit, Ray Tracing 3a Gen, DLSS 3.5, HDMI 2.1a
+2;Processador AMD Ryzen 7 9800X3D 5.2GHz;Processadores;3299.90;3699.90;6;3;1;Novo;/img/cpu.svg;8 Nucleos, 16 Threads, Cache 104MB 3D V-Cache, Socket AM5
+3;Memoria RAM Kingston Fury Beast 32GB DDR5;Memorias RAM;899.90;1099.90;8;3;1;Oferta;/img/ram.svg;Kit 2x16GB, 6000MT/s, CL30, Dissipador Aluminio Low-Profile
+4;SSD NVMe WD Black SN850X 2TB PCIe 4.0;Armazenamento;1149.90;1349.90;5;2;1;Top Vendas;/img/ssd.svg;M.2 2280, Leitura 7300 MB/s, Gravacao 6600 MB/s, Cache DRAM
+5;Placa-Mae ASUS ROG Strix X870E-E Gaming;Placas-Mae;3499.90;3899.90;3;2;1;Premium;/img/mobo.svg;Socket AM5, Wi-Fi 7, PCIe 5.0 x16, VRM 18+2+2 Fases, USB4
+6;Fonte Corsair RM1000x Shift 1000W 80+ Gold;Fontes;1299.90;1499.90;5;2;1;Modular;/img/psu.svg;Full Modular Lateral, ATX 3.0, Cabo PCIe 5.0 12VHPWR Nativo
